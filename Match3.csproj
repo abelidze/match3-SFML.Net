@@ -80,6 +80,7 @@
     <Compile Include="Rooms\MenuRoom.cs" />
     <Compile Include="Rooms\Room.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SoundManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation\LinearMovement.cs" />
@@ -112,6 +113,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Assets\Fonts\font.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Music\game.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Music\maintheme.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\Shaders\blur.frag">

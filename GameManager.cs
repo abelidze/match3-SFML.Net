@@ -11,7 +11,7 @@ namespace Match3
         #region Singleton
 
         private static GameManager instance;
-        private static object syncRoot = new Object();
+        private static object syncRoot = new object();
         public static GameManager Instance
         {
             get
@@ -75,6 +75,7 @@ namespace Match3
         {
             Window.DispatchEvents();
             RoomManager.CurrentRoom?.Update(deltaTime);
+            SoundManager.Instance.Update(deltaTime);
         }
 
         private void Draw()

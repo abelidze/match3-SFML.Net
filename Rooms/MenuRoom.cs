@@ -11,8 +11,6 @@ namespace Match3.Rooms
         private ShaderEffect background;
         private Sprite logo;
         private Sprite caption;
-        private Button playButton;
-        private Button quitButton;
 
         protected override void Init()
         {
@@ -44,6 +42,14 @@ namespace Match3.Rooms
             y = (uint) play.Y + sPlay.Texture.Size.Y;
             var quit = Add<Button>(sQuit, x, y).Value as Button;
             quit.OnClicked += () => GameManager.Window.Close();
+        }
+
+        public override void Enter()
+        {
+            base.Enter();
+            
+            // Theme music
+            SoundManager.SetTheme("maintheme");
         }
 
         public override void Draw()

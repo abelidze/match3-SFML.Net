@@ -54,6 +54,9 @@ namespace Match3.Rooms
             score = 0;
             boss.Type = 0;
             boss.Restore();
+            
+            // Theme music
+            SoundManager.SetTheme("game");
         }
 
         public override void Update(float deltaTime)

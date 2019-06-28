@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using SFML.Audio;
 using SFML.Graphics;
 using Newtonsoft.Json;
 using Match3.Animation;
@@ -75,10 +76,15 @@ namespace Match3
             return Instance.resources.Textures[path];
         }
 
-        public static Spritesheet GetSpritesheetByTileId(int id)
+        public static Music LoadMusic(string name)
         {
-            var sprite = Instance.resources.Sprites[Tiles[id]];
-            return Instance.resources.Spritesheets[sprite.Spritesheet];
+            name = name.ToLower();
+            if (!Instance.resources.Music.ContainsKey(name)) {
+                var music = SFML.Loaders.AutoMusic($"Assets/Music/{name}");
+                Instance.resources.Music.Add(name, music);
+                return music;
+            }
+            return Instance.resources.Music[name];
         }
 
         public static Shader LoadShader(string name)
@@ -113,6 +119,12 @@ namespace Match3
             return new AnimatedSprite(sheet, animations);
         }
 
+        public static Spritesheet GetSpritesheetByTileId(int id)
+        {
+            var sprite = Instance.resources.Sprites[Tiles[id]];
+            return Instance.resources.Spritesheets[sprite.Spritesheet];
+        }
+
         public class Resources
         {
             public Dictionary<string, Texture> Textures = new Dictionary<string, Texture>();
@@ -120,6 +132,7 @@ namespace Match3
             public Dictionary<string, SpriteResource> Sprites = new Dictionary<string, SpriteResource>();
             public Dictionary<string, AnimResource> Animations = new Dictionary<string, AnimResource>();
             public Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
+            public Dictionary<string, Music> Music = new Dictionary<string, Music>();
             public List<BossResource> Bosses = new List<BossResource>();
             public List<string> Tiles = new List<string>();
 
