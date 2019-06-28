@@ -22,7 +22,7 @@ namespace Match3.Rooms
 
             // Logo
             logo = SFML.Loaders.AutoSprite("Assets/Misc/logo");
-            logo.Position = new Vector2f(160f, 32f);
+            logo.Position = new Vector2f(160f, 96f);
             logo.Scale = new Vector2f(.5f, .5f);
 
             // Caption
@@ -34,7 +34,7 @@ namespace Match3.Rooms
             var sQuit = SFML.Loaders.AutoSprite("Assets/Misc/quit");
 
             var x = (Settings.Width - sPlay.Texture.Size.X) / 2;
-            var y = (Settings.Height - sPlay.Texture.Size.Y) / 2;
+            var y = (Settings.Height - sPlay.Texture.Size.Y) / 2 + 64f;
             var play = Add<Button>(sPlay, x, y).Value as Button;
             play.OnClicked += () => RoomManager.LoadRoom<GameRoom>();
 

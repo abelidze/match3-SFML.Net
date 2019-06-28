@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Diagnostics;
 using SFML.Graphics;
@@ -34,6 +34,8 @@ namespace Match3
 
         public static RenderWindow Window { get; private set; }
         public static Random Rand { get; private set; }
+        public static int Score { get; set; }
+        public static bool IsDefeated { get; set; }
 
         #endregion
 
