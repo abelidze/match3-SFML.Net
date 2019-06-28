@@ -6,6 +6,7 @@
 [Rr]eleases/
 [Bb]in/
 [Oo]bj/
+[Pp]ackages/
 
 *.sln
 *.suo
