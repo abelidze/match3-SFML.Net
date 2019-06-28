@@ -94,6 +94,7 @@ namespace Match3.Objects
                 }
             };
             
+            // Stuff below controls game logic => bad coding, needs some refactor
             int shift = 0;
             var room = RoomManager.CurrentRoom as GameRoom;
             var target = new Vector2f(room.boss.Position.X + room.boss.Width / 2, room.boss.Position.Y);
@@ -109,11 +110,14 @@ namespace Match3.Objects
                         continue;
                     }
 
-                    // It controls game logic => bad coding, needs some refactor
+                    // TODO: create "destroy" event for tiles and attach illusions' creation to it from GameRoom
                     var cell = grid[x, y];
-                    var obj = RoomManager.CurrentRoom.Add<Projectile>(cell.Type, cell.Position, target).Value as Projectile;
+                    var obj = room.Add<Projectile>(cell.Type, cell.Position, target).Value as Projectile;
                     var damage = matchCount / 3f;
-                    obj.OnDestroyed += () => room.boss.Damage(damage);
+                    obj.OnDestroyed += () => {
+                        room.boss.Damage(damage);
+                        SoundManager.PlaySound("collapse" + GameManager.Rand.Next(1, 4), 90f); // using hardcoded string == bad
+                    };
 
                     cell.Type = RandomTile();
                     ++shift;

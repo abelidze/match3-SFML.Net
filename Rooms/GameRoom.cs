@@ -1,4 +1,4 @@
-﻿using SFML.Window;
+using SFML.Window;
 using SFML.System;
 using SFML.Graphics;
 using Match3.Objects;

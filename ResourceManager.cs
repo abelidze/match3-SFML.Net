@@ -87,6 +87,17 @@ namespace Match3
             return Instance.resources.Music[name];
         }
 
+        public static Sound LoadSound(string name)
+        {
+            name = name.ToLower();
+            if (!Instance.resources.Sounds.ContainsKey(name)) {
+                var buffer = SFML.Loaders.AutoSound($"Assets/SFX/{name}");
+                Instance.resources.Sounds.Add(name, buffer);
+                return new Sound(buffer);
+            }
+            return new Sound(Instance.resources.Sounds[name]);
+        }
+
         public static Shader LoadShader(string name)
         {
             name = name.ToLower();
@@ -127,12 +138,13 @@ namespace Match3
 
         public class Resources
         {
+            public Dictionary<string, SoundBuffer> Sounds = new Dictionary<string, SoundBuffer>();
+            public Dictionary<string, Music> Music = new Dictionary<string, Music>();
             public Dictionary<string, Texture> Textures = new Dictionary<string, Texture>();
             public Dictionary<string, Spritesheet> Spritesheets = new Dictionary<string, Spritesheet>();
             public Dictionary<string, SpriteResource> Sprites = new Dictionary<string, SpriteResource>();
             public Dictionary<string, AnimResource> Animations = new Dictionary<string, AnimResource>();
             public Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
-            public Dictionary<string, Music> Music = new Dictionary<string, Music>();
             public List<BossResource> Bosses = new List<BossResource>();
             public List<string> Tiles = new List<string>();
 

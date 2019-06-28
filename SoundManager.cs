@@ -1,4 +1,6 @@
-﻿using SFML.Audio;
+﻿using System;
+using System.Collections.Generic;
+using SFML.Audio;
 
 namespace Match3
 {
@@ -25,11 +27,19 @@ namespace Match3
 
         #endregion
 
+        #region Events
+
+        public event Action OnSilent;
+
+        #endregion
+
         #region Fields
-        
+
         private float volumeDown;
         private float volumeUp;
         private Music nextTheme;
+        private LinkedList<Sound> sounds;
+        private const float maxVolume = 80f;
 
         #endregion
 
@@ -42,31 +52,51 @@ namespace Match3
         private SoundManager()
         {
             volumeDown = 0f;
-            volumeUp = 100f;
+            volumeUp = maxVolume;
+            sounds = new LinkedList<Sound>();
         }
 
         #region Callbacks
 
         public void Update(float deltaTime)
         {
+            // Dispose stopped sounds
+            var node = sounds.First;
+            while (node != null) {
+                if (node.Value.Status == SoundStatus.Stopped) {
+                    node.Value.Dispose();
+                    sounds.Remove(node);
+                }
+                node = node.Next;
+
+                if (sounds.Count == 0) {
+                    OnSilent?.Invoke();
+                }
+            }
+
+            if (Theme == null) return;
+
             // Smooth in/out effect
             if (volumeDown > 0f) {
-                volumeDown -= deltaTime * 100f;
-                if (volumeDown <= 0f && nextTheme != null) {
+                volumeDown -= deltaTime * maxVolume;
+                if (volumeDown <= 0f) {
                     volumeDown = 0f;
                     Theme.Stop();
-                    Theme.Volume = 100f;
+                    Theme.Volume = maxVolume;
 
-                    Theme = nextTheme;
-                    Theme.Volume = 100f;
-                    Theme.Play();
-                    nextTheme = null;
+                    if (nextTheme != null) {
+                        Theme = nextTheme;
+                        Theme.Volume = maxVolume;
+                        Theme.Loop = true;
+                        Theme.Play();
+                        nextTheme = null;
+                    }
                 } else {
                     Theme.Volume = volumeDown;
                 }
-            } else if (volumeUp < 100f) {
-                volumeUp += deltaTime * 50f;
-                volumeUp = volumeUp > 100f ? 100f : volumeUp;
+            } else if (volumeUp < maxVolume) {
+                volumeUp += deltaTime * maxVolume * 0.5f;
+                volumeUp = volumeUp > maxVolume ? maxVolume : volumeUp;
                 Theme.Volume = volumeUp;
             }
         }
@@ -75,11 +105,20 @@ namespace Match3
 
         #region Utils
 
+        public static void PlaySound(string name, float volume = 100f)
+        {
+            var sound = ResourceManager.LoadSound(name);
+            sound.Volume = volume;
+            sound.Play();
+            Instance.sounds.AddLast(sound);
+            System.Console.WriteLine(Instance.sounds.Count);
+        }
+
         public static void SetTheme(string name, bool smooth = true)
         {
             var music = ResourceManager.LoadMusic(name);
             if (Theme != null && smooth) {
-                Instance.volumeDown = 100f;
+                Instance.volumeDown = Theme.Volume;
                 Instance.volumeUp = 0f;
                 Instance.nextTheme = music;
             } else {
@@ -87,7 +126,15 @@ namespace Match3
                     Theme.Stop();
                 }
                 Theme = music;
+                Theme.Loop = true;
                 Theme.Play();
+            }
+        }
+
+        public static void StopTheme()
+        {
+            if (Theme != null) {
+                Instance.volumeDown = Theme.Volume;
             }
         }
 
