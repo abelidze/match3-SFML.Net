@@ -1,0 +1,101 @@
+{
+    "spritesheets": {
+        "player_1": {
+            "name": "player_1",
+            "path": "Assets/Player/player_1",
+            "width": 12,
+            "height": 8
+        },
+        "player_2": {
+            "name": "player_2",
+            "path": "Assets/Player/player_2",
+            "width": 12,
+            "height": 8
+        },
+        "bosses": {
+            "name": "bosses",
+            "path": "Assets/Monster/bosses",
+            "width": 3,
+            "height": 4
+        }
+    },
+    "sprites": {
+        "tile_0": {
+            "spritesheet": "player_1",
+            "animations": [ "down", "left", "right", "up" ],
+            "offsetX": 6,
+            "offsetY": 0,
+            "width": 3
+        },
+        "tile_1": {
+            "spritesheet": "player_1",
+            "animations": [ "down", "left", "right", "up" ],
+            "offsetX": 6,
+            "offsetY": 4,
+            "width": 3
+        },
+        "tile_2": {
+            "spritesheet": "player_2",
+            "animations": [ "down", "left", "right", "up" ],
+            "offsetX": 3,
+            "offsetY": 4,
+            "width": 3
+        },
+        "tile_3": {
+            "spritesheet": "player_2",
+            "animations": [ "down", "left", "right", "up" ],
+            "offsetX": 9,
+            "offsetY": 0,
+            "width": 3
+        },
+        "tile_4": {
+            "spritesheet": "player_2",
+            "animations": [ "down", "left", "right", "up" ],
+            "offsetX": 0,
+            "offsetY": 4,
+            "width": 3
+        },
+        "boss_1": {
+            "spritesheet": "bosses",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 0,
+            "width": 3
+        },
+        "boss_2": {
+            "spritesheet": "bosses",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 1,
+            "width": 3
+        },
+        "boss_3": {
+            "spritesheet": "bosses",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 2,
+            "width": 3
+        },
+        "boss_4": {
+            "spritesheet": "bosses",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 3,
+            "width": 3
+        },
+    },
+    "animations": {
+        "idle":  { "delay": 0.20, "frames": [ 0, 1, 2, 1 ] },
+        "down":  { "delay": 0.15, "frames": [ 1, 0, 1, 2 ] },
+        "left":  { "delay": 0.15, "frames": [ 4, 3, 4, 5 ] },
+        "right": { "delay": 0.15, "frames": [ 7, 6, 7, 8 ] },
+        "up":    { "delay": 0.15, "frames": [ 10, 9, 10, 11 ] },
+    },
+    "tiles": [ "tile_0", "tile_1", "tile_2", "tile_3", "tile_4" ],
+    "bosses": [
+        { "sprite": "boss_4", "health": 150.0 },
+        { "sprite": "boss_3", "health": 300.0 },
+        { "sprite": "boss_2", "health": 500.0 },
+        { "sprite": "boss_1", "health": 800.0 },
+    ]
+}
