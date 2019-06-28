@@ -1,8 +1,9 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Diagnostics;
 using SFML.Graphics;
-using SFML.System;
 using SFML.Window;
+using Newtonsoft.Json;
 
 namespace Match3
 {
@@ -40,6 +41,12 @@ namespace Match3
         {
             SFML.Portable.Activate();
             Rand = new Random();
+
+            var settingsPath = "Config/settings.json";
+            if (File.Exists(settingsPath)) {
+                var json = File.ReadAllText(settingsPath);
+                JsonConvert.DeserializeObject<Settings>(json);
+            }
         }
         
         #region Callbacks
