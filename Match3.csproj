@@ -56,10 +56,10 @@
   <ItemGroup>
     <Compile Include="Animation\Anim.cs" />
     <Compile Include="Animation\AnimatedSprite.cs" />
-    <Compile Include="Animation\ITween.cs" />
-    <Compile Include="Animation\ShaderEffect.cs" />
-    <Compile Include="Animation\SwapMovement.cs" />
-    <Compile Include="Animation\TweenGroup.cs" />
+    <Compile Include="Animation\Tweens\ITween.cs" />
+    <Compile Include="Animation\Tweens\ShaderEffect.cs" />
+    <Compile Include="Animation\Tweens\SwapMovement.cs" />
+    <Compile Include="Animation\Tweens\TweenGroup.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Animation\Spritesheet.cs" />
     <Compile Include="Misc\Helpers.cs" />
@@ -79,21 +79,34 @@
     <Compile Include="Misc\IHasRoomAccess.cs" />
     <Compile Include="Rooms\MenuRoom.cs" />
     <Compile Include="Rooms\Room.cs" />
+    <Compile Include="Rooms\ScoreRoom.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SoundManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\LinearMovement.cs" />
+    <Compile Include="Animation\Tweens\LinearMovement.cs" />
     <Content Include="Assets\Misc\caption.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Misc\defeated.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Misc\gameover.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Misc\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Misc\menu.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Misc\play.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Misc\quit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Misc\restart.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Monster\bosses.png">
@@ -121,6 +134,33 @@
     <None Include="Assets\Music\maintheme.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Music\opening.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\collapse1.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\collapse2.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\collapse3.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\death.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\match1.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\match2.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\match3.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\victory.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Shaders\blur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -143,6 +183,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Config\resources.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
