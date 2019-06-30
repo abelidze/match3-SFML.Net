@@ -13,6 +13,21 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,19 +71,24 @@
   <ItemGroup>
     <Compile Include="Animation\Anim.cs" />
     <Compile Include="Animation\AnimatedSprite.cs" />
+    <Compile Include="Effects\FadeEffect.cs" />
     <Compile Include="Animation\Tweens\ITween.cs" />
-    <Compile Include="Animation\Tweens\ShaderEffect.cs" />
+    <Compile Include="Effects\ShaderEffect.cs" />
     <Compile Include="Animation\Tweens\SwapMovement.cs" />
     <Compile Include="Animation\Tweens\TweenGroup.cs" />
+    <Compile Include="Effects\IEffect.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Animation\Spritesheet.cs" />
+    <Compile Include="Misc\Healthbar.cs" />
     <Compile Include="Misc\Helpers.cs" />
-    <Compile Include="Misc\ICanHandleMouse.cs" />
+    <Compile Include="Misc\IMouseListener.cs" />
     <Compile Include="Misc\SpritesheetConverter.cs" />
+    <Compile Include="Objects\Actor.cs" />
     <Compile Include="Objects\Boss.cs" />
     <Compile Include="Objects\Button.cs" />
     <Compile Include="Objects\GameObject.cs" />
     <Compile Include="Objects\Grid.cs" />
+    <Compile Include="Objects\Player.cs" />
     <Compile Include="Objects\Projectile.cs" />
     <Compile Include="Objects\Tile.cs" />
     <Compile Include="Program.cs" />
@@ -115,6 +135,9 @@
     <Content Include="Assets\Monster\dragons.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Player\overlord.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Player\player_1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -122,7 +145,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Assets\Fonts\font.ttf">
@@ -137,13 +166,43 @@
     <None Include="Assets\Music\opening.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\SFX\collapse1.ogg">
+    <None Include="Assets\SFX\attack1.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\SFX\collapse2.ogg">
+    <None Include="Assets\SFX\attack10.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\SFX\collapse3.ogg">
+    <None Include="Assets\SFX\attack11.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack12.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack13.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack2.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack3.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack4.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack5.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack6.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack7.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack8.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\attack9.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\SFX\death.ogg">
@@ -156,6 +215,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\SFX\match3.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\monster1.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\monster2.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\SFX\monster3.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\SFX\victory.ogg">
@@ -178,6 +246,9 @@
     </None>
     <None Include="Assets\Shaders\space.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Shaders\spawn.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\Shaders\star.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
