@@ -2,20 +2,28 @@
 using SFML.System;
 using SFML.Graphics;
 using Match3.Objects;
+using Match3.Effects;
 
 namespace Match3.Rooms
 {
-    public class ScoreRoom : Room
+    public sealed class ScoreRoom : Room
     {
         private Text scoreText;
         private Font font;
         private Sprite background;
         private Sprite bgWin;
         private Sprite bgLose;
+        private Effect fadeIn;
+        private Button restartButton;
+        private Button menuButton;
 
         protected override void Init()
         {
             base.Init();
+
+            // UI Fade-In effect
+            fadeIn = new FadeEffect(FadeEffect.Type.In, 2f, true);
+            OnUpdate += fadeIn.Update;
             
             // Background
             bgWin = SFML.Loaders.AutoSprite("Assets/Misc/defeated");
@@ -36,21 +44,25 @@ namespace Match3.Rooms
 
             var x = (Settings.Width - sRestart.Texture.Size.X) / 2;
             var y = (Settings.Height - sRestart.Texture.Size.Y) / 2 + 64f;
-            var restart = Add<Button>(sRestart, x, y).Value as Button;
-            restart.OnClicked += () => RoomManager.LoadRoom<GameRoom>();
+            restartButton = Add<Button>(sRestart, x, y).Value as Button;
+            restartButton.ApplyEffect(fadeIn).OnFinished += () => restartButton.OnClicked += OnRestartClicked;
 
             x = (Settings.Width - sMenu.Texture.Size.X) / 2;
-            y = (uint) restart.Y + sMenu.Texture.Size.Y;
-            var menu = Add<Button>(sMenu, x, y).Value as Button;
-            menu.OnClicked += () => RoomManager.LoadRoom<MenuRoom>();
+            y = (uint) restartButton.Y + sMenu.Texture.Size.Y;
+            menuButton = Add<Button>(sMenu, x, y).Value as Button;
+            menuButton.ApplyEffect(fadeIn).OnFinished += () => menuButton.OnClicked += OnMenuClicked;
         }
 
         public override void Enter()
         {
             base.Enter();
             SoundManager.StopTheme();
+            SoundManager.StopAll();
             SoundManager.Instance.OnSilent += PlayTheme;
-            
+
+            // UI Fade-In
+            fadeIn.Restart();
+            fadeIn.Pause();
             
             // Background and sfx
             if (GameManager.IsDefeated) {
@@ -74,6 +86,9 @@ namespace Match3.Rooms
         {
             base.Leave();
             SoundManager.Instance.OnSilent -= PlayTheme;
+
+            restartButton.OnClicked -= OnRestartClicked;
+            menuButton.OnClicked -= OnMenuClicked;
         }
 
         public override void Draw()
@@ -92,9 +107,20 @@ namespace Match3.Rooms
             }
         }
 
-        public void PlayTheme()
+        private void PlayTheme()
         {
+            fadeIn.Restart();
             SoundManager.SetTheme("opening");
+        }
+
+        private void OnRestartClicked()
+        {
+            RoomManager.LoadRoom<GameRoom>();
+        }
+
+        private void OnMenuClicked()
+        {
+            RoomManager.LoadRoom<MenuRoom>();
         }
     }
 }

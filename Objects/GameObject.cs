@@ -9,6 +9,7 @@ namespace Match3.Objects
         public event Action OnInit;
         public event Action<float> OnUpdate;
         public event Action OnDraw;
+        public event Action OnDestroy;
 
         #endregion
 
@@ -33,6 +34,11 @@ namespace Match3.Objects
         public virtual void Draw()
         {
             OnDraw?.Invoke();
+        }
+
+        public virtual void Destroy()
+        {
+            OnDestroy?.Invoke();
         }
 
         #endregion

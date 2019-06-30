@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Reflection;
+using System.Globalization;
 using SFML.System;
 using SFML.Window;
 using SFML.Graphics;
 using Match3.Misc;
+using Match3.Effects;
 
 namespace Match3.Objects
 {
-    public class Button : GameObject, ICanHandleMouse
+    public class Button : GameObject, IMouseListener, IHasEffect
     {
         #region Events
 
@@ -28,7 +31,12 @@ namespace Match3.Objects
         public float Height => drawable.Texture.Size.Y;
         public float X => drawable.Position.X;
         public float Y => drawable.Position.Y;
+        public Vector2f Size => new Vector2f(Width, Height);
+        public Vector2f Position => drawable.Position;
+        public bool IsEffectActive => Effect != null;
+        
         public bool IsHovered { get; private set; } = false;
+        public Effect Effect { get; private set; }
 
         #endregion
 
@@ -36,14 +44,18 @@ namespace Match3.Objects
         {
             drawable = sprite;
             drawable.Position = new Vector2f(x, y);
+            OnDraw += ButtonDraw;
         }
 
         #region Callbacks
 
-        public override void Draw()
+        public void ButtonDraw()
         {
-            base.Draw();
-            GameManager.Window.Draw(drawable);
+            if (IsEffectActive) {
+                GameManager.Window.Draw(drawable, Effect.States);
+            } else {
+                GameManager.Window.Draw(drawable);
+            }
         }
 
         public void MouseDown(MouseButtonEventArgs e)
@@ -64,6 +76,22 @@ namespace Match3.Objects
         #endregion
 
         #region Utils
+        
+        public Effect ApplyEffect<T>(params object[] args) where T : Effect
+        {
+            // BindingFlags.Public | BindingFlags.Instance;
+            var binding = BindingFlags.OptionalParamBinding | BindingFlags.CreateInstance;
+            var obj = (T) Activator.CreateInstance(typeof(T), binding, null, args, CultureInfo.CurrentCulture);
+            return ApplyEffect(obj);
+        }
+
+        public Effect ApplyEffect(Effect effect)
+        {
+            effect.Accept(this);
+            //effect.States.Shader?.SetUniform("texture", drawable.Texture);
+            Effect = effect;
+            return effect;
+        }
 
         private bool IsOverButton(int x, int y)
         {

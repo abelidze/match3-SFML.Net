@@ -92,7 +92,7 @@ namespace Match3.Animation
 
         private void UpdateRect()
         {
-            TextureRect = spritesheet.Frames[CurrentFrame];
+            TextureRect = spritesheet.Frames[Math.Min(CurrentFrame, spritesheet.Frames.Count - 1)];
         }
 
         #endregion

@@ -74,13 +74,15 @@
     <Compile Include="Effects\FadeEffect.cs" />
     <Compile Include="Animation\Tweens\ITween.cs" />
     <Compile Include="Effects\ShaderEffect.cs" />
+    <Compile Include="Effects\ShapeEffect.cs" />
     <Compile Include="Animation\Tweens\SwapMovement.cs" />
     <Compile Include="Animation\Tweens\TweenGroup.cs" />
-    <Compile Include="Effects\IEffect.cs" />
+    <Compile Include="Effects\Effect.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Animation\Spritesheet.cs" />
     <Compile Include="Misc\Healthbar.cs" />
     <Compile Include="Misc\Helpers.cs" />
+    <Compile Include="Misc\IHasEffect.cs" />
     <Compile Include="Misc\IMouseListener.cs" />
     <Compile Include="Misc\SpritesheetConverter.cs" />
     <Compile Include="Objects\Actor.cs" />
@@ -105,10 +107,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation\Tweens\LinearMovement.cs" />
+    <Content Include="Assets\Grid\grid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Misc\caption.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Misc\defeated.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Misc\floor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Misc\gameover.jpg">
@@ -142,6 +150,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Player\player_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Player\player_3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

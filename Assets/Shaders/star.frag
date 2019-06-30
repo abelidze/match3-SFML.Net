@@ -4,7 +4,6 @@ precision highp float;
 
 #extension GL_OES_standard_derivatives : enable
 
-uniform sampler2D texture;
 uniform float time;
 uniform vec2 resolution;
 uniform vec2 position;

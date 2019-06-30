@@ -3,27 +3,31 @@ using SFML.Window;
 using SFML.System;
 using SFML.Graphics;
 using Match3.Objects;
-using Match3.Animation;
+using Match3.Effects;
 
 namespace Match3.Rooms
 {
-    public class GameRoom : Room
+    public sealed class GameRoom : Room
     {
         public Boss boss;
+        public Player player;
 
         private Text goBackText;
         private Text timeText;
         private Text scoreText;
         private Font font;
-        private ShaderEffect background;
+        private Grid grid;
+        private ShapeEffect background;
+        private ShapeEffect selected;
         private float timeLeft;
+        private float bossTimer;
 
         protected override void Init()
         {
             base.Init();
 
             // Background
-            background = new ShaderEffect("space", Vector2f.Zero, new Vector2f(Settings.Width, Settings.Height));
+            background = new ShapeEffect("space", Vector2f.Zero, new Vector2f(Settings.Width, Settings.Height));
             OnUpdate += background.Update;
             
             // Main font
@@ -42,25 +46,39 @@ namespace Match3.Rooms
             };
 
             // Right-click text
-            goBackText = new Text("Press RMB to go back to menu", font, 32) {
+            goBackText = new Text("Press ESC or RMB to go back to menu", font, 32) {
                 Position = new Vector2f(16f, Settings.Height - 32 - 16),
                 FillColor = new Color(255, 255, 255)
             };
-
-            // Boss
-            var bossSprite = ResourceManager.LoadSprite( ResourceManager.Bosses[0].sprite );
-            boss = Add<Boss>(0, 32f, (Settings.Height - bossSprite.TextureRect.Height) / 2).Value as Boss;
-            boss.OnDefeated += () => GameOver(true);
 
             // Add grid to room
             var sheet = ResourceManager.GetSpritesheetByTileId(0); // Dangerous hard-coded tiles' size
             var originX = (float) (Settings.Width - Settings.GridWidth * sheet.TileWidth) / 2;
             var originY = (float) (Settings.Height - Settings.GridHeight * sheet.TileHeight) / 2;
-            var grid = Add<Grid>(originX, originY, Settings.GridWidth, Settings.GridHeight).Value as Grid;
+            grid = Add<Grid>(originX, originY, Settings.GridWidth, Settings.GridHeight).Value as Grid;
             grid.OnMatchCollected += (x) => {
                 GameManager.Score += (x + 1) / 2 * x * 10;
                 SoundManager.PlaySound("match3");// + GameManager.Rand.Next(1, 4));
             };
+
+            // Boss
+            var bs = ResourceManager.LoadSprite( ResourceManager.Bosses[0].sprite );
+            boss = Add<Boss>(0, (grid.X - bs.TextureRect.Width) / 2, (Settings.Height - bs.TextureRect.Height) / 2).Value as Boss;
+            boss.OnDefeated += () => GameOver(true);
+
+            // Player
+            player = Add<Player>(0f, 0f, Settings.Time).Value as Player;
+            player.Position = new Vector2f(
+                (Settings.Width + grid.X + grid.RealWidth - player.Width) / 2,
+                (Settings.Height - player.Height) / 2
+            );
+
+            // Selected cursor
+            var tileSize = new Vector2f(grid.CellWidth, grid.CellHeight);
+            selected = new ShapeEffect("star", Vector2f.Zero, tileSize) {
+                Offset = tileSize / 2
+            };
+            OnUpdate += selected.Update;
         }
 
         public override void Enter()
@@ -68,11 +86,15 @@ namespace Match3.Rooms
             base.Enter();
             GameManager.Score = 0;
             GameManager.IsDefeated = false;
-            timeLeft = 150f;
+            timeLeft = Settings.Time;
+
+            bossTimer = GameManager.Random() * 2f;
             boss.Type = 0;
             boss.Restore();
+            player.Restore();
             
             // Theme music
+            SoundManager.StopAll();
             SoundManager.SetTheme("game");
         }
 
@@ -85,11 +107,23 @@ namespace Match3.Rooms
 
             // Time
             timeLeft -= deltaTime;
-            if (timeLeft <= 0f) {
+            if (!player.IsAlive || timeLeft < 0f) {
                 timeLeft = 0f;
                 GameOver(false);
             }
-            timeText.DisplayedString = $"Time left: {Math.Ceiling(timeLeft)}";
+
+            // Boss attacks player
+            bossTimer -= deltaTime;
+            player.Damage(deltaTime);
+            if (!boss.IsDefeated && bossTimer <= 0f) {
+                var obj = Add<Projectile>(RandomProjectile(), boss.Position, player.Position).Value as Projectile;
+                //obj.OnDestroy += () => player.Damage(damage);
+                bossTimer = GameManager.Random() * 2f;
+            }
+
+            var minutesLeft = (int) Math.Floor(timeLeft / 60f);
+            var secondsLeft = (int) Math.Floor(timeLeft - minutesLeft * 60f);
+            timeText.DisplayedString = $"Time left: {minutesLeft}:{secondsLeft.ToString("D2")}";
         }
 
         public override void Draw()
@@ -100,10 +134,18 @@ namespace Match3.Rooms
             GameManager.Window.Draw(timeText);
             GameManager.Window.Draw(scoreText);
             GameManager.Window.Draw(goBackText);
+            
+            var tile = grid.ClickedTile;
+            if (tile != null) {
+                selected.Position = new Vector2f(tile.X, tile.Y);
+                selected.Draw();
+            }
         }
 
         public void GameOver(bool defeated = false)
         {
+            if (grid.TweenCount > 0) return;
+
             GameManager.IsDefeated = defeated;
             RoomManager.LoadRoom<ScoreRoom>();
         }
@@ -115,6 +157,20 @@ namespace Match3.Rooms
             if (e.Button == Mouse.Button.Right) {
                 RoomManager.LoadRoom<MenuRoom>();
             }
+        }
+
+        public override void KeyDown(KeyEventArgs e)
+        {
+            base.KeyDown(e);
+
+            if (e.Code == Keyboard.Key.Escape) {
+                RoomManager.LoadRoom<MenuRoom>();
+            }
+        }
+
+        private string RandomProjectile()
+        {
+            return "projectile_" + GameManager.Rand.Next(1, 6);
         }
     }
 }

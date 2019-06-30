@@ -3,7 +3,7 @@ using SFML.Window;
 
 namespace Match3.Misc
 {
-    public interface ICanHandleMouse
+    public interface IMouseListener
     {
          event Action<MouseButtonEventArgs> OnMouseDown;
          event Action<MouseButtonEventArgs> OnMouseUp;

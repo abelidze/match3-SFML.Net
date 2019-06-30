@@ -12,23 +12,23 @@ namespace Match3.Objects
     {
         #region Fields
 
-        private ShaderEffect explosion;
+        private ShapeEffect explosion;
         private AnimatedSprite drawable;
         private ITween movement;
-        private int type;
+        private string type;
 
         #endregion
         
         #region Properties
 
-        public int Type
+        public string Type
         {
             get => type;
             set
             {
                 type = value;
                 var pos = drawable?.Position ?? new Vector2f(0f, 0f);
-                drawable = ResourceManager.LoadSprite(ResourceManager.Tiles[type]);
+                drawable = ResourceManager.LoadSprite(type);
                 drawable.Position = pos;
             }
         }
@@ -37,11 +37,17 @@ namespace Match3.Objects
         public float Height => drawable.TextureRect.Height;
         public float X => drawable.Position.X;
         public float Y => drawable.Position.Y;
+        public Vector2f Size => new Vector2f(Width, Height);
         public Vector2f Position => drawable.Position;
 
         #endregion
 
-        public Projectile(int type, Vector2f from, Vector2f to)
+        public Projectile(int type, Vector2f from, Vector2f to) : this(ResourceManager.Tiles[type], from, to)
+        {
+            // ...
+        }
+
+        public Projectile(string type, Vector2f from, Vector2f to)
         {
             Type = type; // init drawable
             drawable.Position = from;
@@ -62,11 +68,6 @@ namespace Match3.Objects
 
         #region Callbacks
 
-        ~Projectile()
-        {
-            Console.WriteLine("Projectile destroyed");
-        }
-
         public void Created(Room room, LinkedListNode<GameObject> node)
         {
             void DestoryNode()
@@ -78,15 +79,18 @@ namespace Match3.Objects
             movement.OnFinished += () => {
                 IsHidden = true;
                 // Ugly hard-coded stuff
-                //explosion = new ShaderEffect("particle", new Vector2f(X - 48f, Y - 48f), new Vector2f(200f, 200f), 1f, true);
-                //OnUpdate += explosion.Update;
-                //OnDraw += explosion.Draw;
-                //explosion.OnFinished += () => {
-                //    OnDraw -= explosion.Draw;
-                //    OnUpdate -= explosion.Update;
-                //    room.Remove(node);
-                //};
-                DestoryNode();
+                explosion = new ShapeEffect("particle", Position - Size * 2, Size * 4, 1f, true) {
+                    Offset = Size * 2.5f,
+                    DurationOffset = GameManager.Rand.Next(10000)
+                };
+                OnUpdate += explosion.Update;
+                OnDraw += explosion.Draw;
+                explosion.OnFinished += () => {
+                    OnDraw -= explosion.Draw;
+                    OnUpdate -= explosion.Update;
+                    DestoryNode();
+                    explosion = null;
+                };
                 Destroy();
             };
         }

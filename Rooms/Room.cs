@@ -21,7 +21,7 @@ namespace Match3.Rooms
         
         #region Fields
 
-        private readonly LinkedList<GameObject> objects = new LinkedList<GameObject>();
+        protected readonly LinkedList<GameObject> objects = new LinkedList<GameObject>();
 
         #endregion
 
@@ -65,16 +65,21 @@ namespace Match3.Rooms
 
         public virtual void MouseDown(MouseButtonEventArgs e)
         {
-            foreach(var obj in objects.OfType<ICanHandleMouse>()) {
+            foreach(var obj in objects.OfType<IMouseListener>()) {
                 obj.MouseDown(e);
             }
         }
 
         public virtual void MouseUp(MouseButtonEventArgs e)
         {
-            foreach(var obj in objects.OfType<ICanHandleMouse>()) {
+            foreach(var obj in objects.OfType<IMouseListener>()) {
                 obj.MouseUp(e);
             }
+        }
+
+        public virtual void KeyDown(KeyEventArgs e)
+        {
+            //
         }
 
         #endregion

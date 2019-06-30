@@ -1,14 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SFML.System;
 using SFML.Window;
+using SFML.Graphics;
 using Match3.Misc;
 using Match3.Rooms;
 using Match3.Animation;
 
 namespace Match3.Objects
 {
-    public class Grid : GameObject, IHasRoomAccess, ICanHandleMouse
+    public class Grid : GameObject, IHasRoomAccess, IMouseListener
     {
         #region Events
 
@@ -22,6 +23,7 @@ namespace Match3.Objects
         #region Fields
 
         private Tile[,] grid;
+        private Sprite[,] floor;
         private bool[,] matches;
         private int matchCount;
 
@@ -35,10 +37,12 @@ namespace Match3.Objects
         public int Height { get; private set; }
         public int CellWidth { get; private set; } = 48;
         public int CellHeight { get; private set; } = 48;
+        public int TweenCount { get; private set; } = 0;
         public bool IsBlocked { get; private set; }
         public Tuple<int, int> Selected { get; private set; }
         public Tuple<int, int> SelectedByClick { get; private set; }
-
+        
+        public Tile ClickedTile => SelectedByClick == null ? null : grid[SelectedByClick.Item1, SelectedByClick.Item2];
         public bool IsSelected => Selected != null;
         public int RealWidth => Width * CellWidth;
         public int RealHeight => Height * CellHeight;
@@ -48,6 +52,7 @@ namespace Match3.Objects
         public Grid(float x, float y, int width, int height)
         {
             grid = new Tile[width, height];
+            floor = new Sprite[width, height];
             matches = new bool[width, height];
             Width = width;
             Height = height;
@@ -63,16 +68,34 @@ namespace Match3.Objects
             CellWidth = sheet.TileWidth;
             CellHeight = sheet.TileHeight;
 
+            // Init grid and floor
+            var floorTexture = ResourceManager.LoadTexture("cell", "Assets/Grid/grid");
+            var x = 0f;
+            var y = 0f;
+            var ox = (CellWidth - floorTexture.Size.X) / 2;
+            var oy = CellHeight / 2;
             for (int cellX = 0; cellX < Width; ++cellX) {
+                x = X + CellWidth * cellX;
                 for (int cellY = 0; cellY < Height; ++cellY) {
-                    var tile = new Tile(RandomTile(), X + CellWidth * cellX, Y + CellHeight * cellY);
+                    y = Y + CellHeight * cellY;
+
+                    floor[cellX, cellY] = new Sprite(floorTexture) {
+                        Position = new Vector2f(x + ox, y + oy)
+                    };
+
+                    var tile = new Tile(RandomTile(), x, y);
                     grid[cellX, cellY] = tile;
                     room.Add(tile);
                 }
             }
 
+            // Generate valid grid
             RandomizeField();
             room.OnEnter += RandomizeField;
+            room.OnLeave += () => {
+                Selected = null;
+                SelectedByClick = null;
+            };
         }
 
         public void GridChanged()
@@ -134,6 +157,16 @@ namespace Match3.Objects
             }
         }
 
+        public override void Draw()
+        {
+            base.Draw();
+            for (int x = 0; x < Width; ++x) {
+                for (int y = 0; y < Height; ++y) {
+                    GameManager.Window.Draw(floor[x, y]);
+                }
+            }
+        }
+
         public void MouseDown(MouseButtonEventArgs e)
         {
             OnMouseDown?.Invoke(e);
@@ -153,12 +186,13 @@ namespace Match3.Objects
                 return;
             }
 
-            if (SelectedByClick != null) {
+            var cellX = (int) Math.Truncate((e.X - X) / CellWidth);
+            var cellY = (int) Math.Truncate((e.Y - Y) / CellHeight);
+
+            if (SelectedByClick != null && IsAdjacent(cellX, cellY, SelectedByClick.Item1, SelectedByClick.Item2)) {
                 Selected = SelectedByClick;
             }
 
-            var cellX = (int) Math.Truncate((e.X - X) / CellWidth);
-            var cellY = (int) Math.Truncate((e.Y - Y) / CellHeight);
             if (cellX == Selected.Item1 && cellY == Selected.Item2) {
                 //grid[cellX, cellY].PlayRandom();
                 SelectedByClick = Selected;
@@ -212,6 +246,9 @@ namespace Match3.Objects
                     grid[cellX, cellY].MoveTo(new Vector2f(X + CellWidth * cellX, Y + CellHeight * cellY), true);
                 }
             }
+
+            Selected = null;
+            SelectedByClick = null;
         }
 
         public void Swap(int x1, int y1, int x2, int y2, bool reverted = false)
@@ -220,6 +257,7 @@ namespace Match3.Objects
             var tween = grid[x1, y1].Swap(grid[x2, y2]);
             OnUpdate += tween.Update;
             tween.OnFinished += () => {
+                --TweenCount;
                 OnUpdate -= tween.Update;
                 Helpers.Swap(ref grid[x1, y1], ref grid[x2, y2]);
                 if (reverted) {
@@ -234,6 +272,7 @@ namespace Match3.Objects
                     Swap(x1, y1, x2, y2, true);
                 }
             };
+            ++TweenCount;
         }
 
         private void FindMatches()
@@ -278,6 +317,13 @@ namespace Match3.Objects
         private int RandomTile()
         {
             return GameManager.Rand.Next(ResourceManager.Tiles.Count);
+        }
+
+        public bool IsAdjacent(int x1, int y1, int x2, int y2)
+        {
+            var dx = Math.Abs(x1 - x2);
+            var dy = Math.Abs(y1 - y2);
+            return (dx == 1 && dy == 0) || (dy == 1 && dx == 0);
         }
 
         public bool IsInGrid(int x, int y)

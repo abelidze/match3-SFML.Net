@@ -73,7 +73,7 @@ namespace Match3
                 Instance.resources.Textures.Add(name, texture);
                 return texture;
             }
-            return Instance.resources.Textures[path];
+            return Instance.resources.Textures[name];
         }
 
         public static Music LoadMusic(string name)

@@ -6,6 +6,6 @@
     "gridWidth": 12,
     "gridHeight": 12,
     "maxSounds": 30,
-    "music": false,
+    "music": true,
     "sound": true
 }

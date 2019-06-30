@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SFML.Graphics;
 
 namespace Match3.Animation
 {
@@ -34,7 +33,7 @@ namespace Match3.Animation
             tweens = new List<ITween>();
             processingTweens = 0;
         }
-        
+
         #region Callbacks
 
         public void Update(float deltaTime)

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
+using SFML.Graphics;
 using Newtonsoft.Json;
 
 namespace Match3
@@ -56,14 +57,16 @@ namespace Match3
         public void Start(string caption)
         {
             // Bootstraping
-            Window = new RenderWindow(new VideoMode(Settings.Width, Settings.Height), caption);
+            Window = new RenderWindow(new VideoMode(Settings.Width, Settings.Height), caption, Styles.Close);
             Window.SetMouseCursorVisible(true);
             Window.SetFramerateLimit(Settings.FrameRate);
 
             // Attach to SFML events
-            Window.Closed += (x, y) => Window.Close();
-            Window.MouseButtonPressed += (_, args) => RoomManager.CurrentRoom?.MouseDown(args);
-            Window.MouseButtonReleased += (_, args) => RoomManager.CurrentRoom?.MouseUp(args);
+            Window.Closed += (_, e) => Window.Close();
+            Window.Resized += (_, e) => Window.Size = new Vector2u(Settings.Width, Settings.Height);
+            Window.MouseButtonPressed += (_, e) => RoomManager.CurrentRoom?.MouseDown(e);
+            Window.MouseButtonReleased += (_, e) => RoomManager.CurrentRoom?.MouseUp(e);
+            Window.KeyPressed += (_, e) => RoomManager.CurrentRoom?.KeyDown(e);
 
             // Load resources, start the first room
             ResourceManager.LoadResources("Config/resources.json");
@@ -80,6 +83,11 @@ namespace Match3
             }
         }
 
+        private void Window_Resized(object sender, SizeEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Update(float deltaTime)
         {
             Window.DispatchEvents();
@@ -92,6 +100,15 @@ namespace Match3
             Window.Clear(Color.Black);
             RoomManager.CurrentRoom?.Draw();
             Window.Display();
+        }
+
+        #endregion
+
+        #region Utils
+
+        public static float Random()
+        {
+            return (float) Rand.Next() / Int32.MaxValue;
         }
 
         #endregion

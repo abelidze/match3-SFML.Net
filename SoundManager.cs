@@ -38,7 +38,8 @@ namespace Match3
         private float volumeDown;
         private float volumeUp;
         private Music nextTheme;
-        private LinkedList<Sound> sounds;
+        private HashSet<string> uniqueSounds;
+        private LinkedList< Tuple<string, Sound> > sounds;
         private const float maxVolume = 80f;
 
         #endregion
@@ -53,7 +54,8 @@ namespace Match3
         {
             volumeDown = 0f;
             volumeUp = maxVolume;
-            sounds = new LinkedList<Sound>();
+            sounds = new LinkedList< Tuple<string, Sound> >();
+            uniqueSounds = new HashSet<string>();
         }
 
         #region Callbacks
@@ -63,8 +65,11 @@ namespace Match3
             // Dispose stopped sounds
             var node = sounds.First;
             while (node != null) {
-                if (node.Value.Status == SoundStatus.Stopped) {
-                    node.Value.Dispose();
+                if (node.Value.Item2.Status == SoundStatus.Stopped) {
+                    if (uniqueSounds.Contains(node.Value.Item1)) {
+                        uniqueSounds.Remove(node.Value.Item1);
+                    }
+                    node.Value.Item2.Dispose();
                     sounds.Remove(node);
                 }
                 node = node.Next;
@@ -76,7 +81,7 @@ namespace Match3
 
             if (Theme == null) return;
 
-            // Smooth in/out effect
+            // Smooth in/out effect for theme
             if (volumeDown > 0f) {
                 volumeDown -= deltaTime * maxVolume;
                 if (volumeDown <= 0f) {
@@ -105,17 +110,32 @@ namespace Match3
 
         #region Utils
 
-        public static void PlaySound(string name, float volume = 100f)
+        public static void PlaySound(string name, float volume = 100f, bool isUnique = false)
         {
+            if (!Settings.IsSoundEnabled) {
+                Instance.OnSilent?.Invoke();
+                return;
+            }
+
+            if (Instance.sounds.Count > Settings.MaxSounds || Instance.uniqueSounds.Contains(name)) {
+                return;
+            }
+
             var sound = ResourceManager.LoadSound(name);
             sound.Volume = volume;
             sound.Play();
-            Instance.sounds.AddLast(sound);
-            System.Console.WriteLine(Instance.sounds.Count);
+
+            if (isUnique) {
+                Instance.uniqueSounds.Add(name);
+            }
+
+            Instance.sounds.AddLast(new Tuple<string, Sound>(name, sound));
         }
 
         public static void SetTheme(string name, bool smooth = true)
         {
+            if (!Settings.IsMusicEnabled) return;
+
             var music = ResourceManager.LoadMusic(name);
             if (Theme != null && smooth) {
                 Instance.volumeDown = Theme.Volume;
@@ -128,6 +148,13 @@ namespace Match3
                 Theme = music;
                 Theme.Loop = true;
                 Theme.Play();
+            }
+        }
+
+        public static void StopAll()
+        {
+            foreach (var sound in Instance.sounds) {
+                sound.Item2.Stop();
             }
         }
 
