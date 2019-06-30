@@ -1,7 +1,11 @@
 {
     "fps": 60,
+    "time": 60,
     "width": 1280,
     "height": 720,
     "gridWidth": 12,
-    "gridHeight": 12
+    "gridHeight": 12,
+    "maxSounds": 30,
+    "music": false,
+    "sound": true
 }

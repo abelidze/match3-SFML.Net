@@ -17,6 +17,12 @@
             "path": "Assets/Monster/bosses",
             "width": 3,
             "height": 4
+        },
+        "overlord": {
+            "name": "overlord",
+            "path": "Assets/Player/overlord",
+            "width": 1,
+            "height": 1
         }
     },
     "sprites": {
@@ -83,19 +89,33 @@
             "offsetY": 3,
             "width": 3
         },
+        "boss_4": {
+            "spritesheet": "bosses",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 3,
+            "width": 3
+        },
+        "overlord": {
+            "spritesheet": "overlord",
+            "animations": [ "idle" ],
+            "offsetX": 0,
+            "offsetY": 0,
+            "width": 1
+        }
     },
     "animations": {
         "idle":  { "delay": 0.20, "frames": [ 0, 1, 2, 1 ] },
         "down":  { "delay": 0.15, "frames": [ 1, 0, 1, 2 ] },
         "left":  { "delay": 0.15, "frames": [ 4, 3, 4, 5 ] },
         "right": { "delay": 0.15, "frames": [ 7, 6, 7, 8 ] },
-        "up":    { "delay": 0.15, "frames": [ 10, 9, 10, 11 ] },
+        "up":    { "delay": 0.15, "frames": [ 10, 9, 10, 11 ] }
     },
     "tiles": [ "tile_0", "tile_1", "tile_2", "tile_3", "tile_4" ],
     "bosses": [
-        { "sprite": "boss_4", "health": 120.0 },
-        { "sprite": "boss_3", "health": 200.0 },
-        { "sprite": "boss_2", "health": 350.0 },
-        { "sprite": "boss_1", "health": 500.0 },
+        { "sprite": "boss_4", "health": 100.0 },
+        { "sprite": "boss_3", "health": 120.0 },
+        { "sprite": "boss_2", "health": 150.0 },
+        { "sprite": "boss_1", "health": 200.0 }
     ]
 }
