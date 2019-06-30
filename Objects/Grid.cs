@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SFML.System;
 using SFML.Window;
@@ -112,11 +112,14 @@ namespace Match3.Objects
 
                     // TODO: create "destroy" event for tiles and attach illusions' creation to it from GameRoom
                     var cell = grid[x, y];
-                    var obj = room.Add<Projectile>(cell.Type, cell.Position, target).Value as Projectile;
                     var damage = matchCount / 3f;
-                    obj.OnDestroyed += () => {
+                    var obj = room.Add<Projectile>(cell.Type, cell.Position, target).Value as Projectile;
+                    obj.OnDestroy += () => {
                         room.boss.Damage(damage);
-                        SoundManager.PlaySound("collapse" + GameManager.Rand.Next(1, 4), 90f); // using hardcoded string == bad
+
+                        // using hardcoded strings == bad
+                        SoundManager.PlaySound("attack" + GameManager.Rand.Next(1, 14), 90f, true);
+                        SoundManager.PlaySound("monster" + GameManager.Rand.Next(1, 4), 50f, true);
                     };
 
                     cell.Type = RandomTile();

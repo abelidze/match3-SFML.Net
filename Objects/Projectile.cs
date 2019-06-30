@@ -4,17 +4,12 @@ using SFML.System;
 using Match3.Misc;
 using Match3.Rooms;
 using Match3.Animation;
+using Match3.Effects;
 
 namespace Match3.Objects
 {
     public class Projectile : GameObject, IHasRoomAccess
     {
-        #region Events
-
-        public event Action OnDestroyed;
-
-        #endregion
-
         #region Fields
 
         private ShaderEffect explosion;
@@ -67,17 +62,32 @@ namespace Match3.Objects
 
         #region Callbacks
 
+        ~Projectile()
+        {
+            Console.WriteLine("Projectile destroyed");
+        }
+
         public void Created(Room room, LinkedListNode<GameObject> node)
         {
-            room.OnLeave += () => room.Remove(node);
+            void DestoryNode()
+            {
+                room.Remove(node);
+                room.OnLeave -= DestoryNode;
+            };
+            room.OnLeave += DestoryNode;
             movement.OnFinished += () => {
                 IsHidden = true;
                 // Ugly hard-coded stuff
-                explosion = new ShaderEffect("particle", new Vector2f(X - 48f, Y - 48f), new Vector2f(200f, 200f), 1f, true);
-                OnUpdate += explosion.Update;
-                OnDraw += explosion.Draw;
-                explosion.OnFinished += () => room.Remove(node);
-                OnDestroyed?.Invoke();
+                //explosion = new ShaderEffect("particle", new Vector2f(X - 48f, Y - 48f), new Vector2f(200f, 200f), 1f, true);
+                //OnUpdate += explosion.Update;
+                //OnDraw += explosion.Draw;
+                //explosion.OnFinished += () => {
+                //    OnDraw -= explosion.Draw;
+                //    OnUpdate -= explosion.Update;
+                //    room.Remove(node);
+                //};
+                DestoryNode();
+                Destroy();
             };
         }
 
